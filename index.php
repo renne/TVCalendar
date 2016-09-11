@@ -1,4 +1,7 @@
 <?php
+
+try {
+
 //header("Content-type: text/calendar;");
 error_reporting(E_ALL);
 include('bennu/lib/bennu.inc.php');
@@ -26,7 +29,29 @@ $leading = "";
     }
     return $output;
 }
-$apicode = file_get_contents("apicode.txt");
+
+
+// Parse config file
+$config_file = './config.ini';
+$config = parse_ini_file($config_file, true, INI_SCANNER_TYPED);
+if(false === $config) {
+	$e = error_get_last();
+	throw new ErrorException($e[message], $e[type], $severity, $e[file], $e[line]);
+}
+
+// Parse API-code file
+$apicode = file_get_contents($config["FILES"]["API-CODE"]);
+if(false === $apicode) {
+	$e = error_get_last();
+	throw new ErrorException($e[message], $e[type], $severity, $e[file], $e[line]);
+}
+
+// Remove leading and trailing whitespaces
+$apicode = trim($apicode);
+
+
+
+
 $fav = file_get_contents("http://www.thetvdb.com/api/User_Favorites.php?accountid=".$_GET["accountid"]);
 $favxml = new SimpleXMLElement($fav);
 
@@ -65,4 +90,15 @@ foreach($favxml->Series as $id){
 	}
 }
 echo $a->serialize();
+}
+
+catch(Exception $e)
+{
+    $exception_message = 'TVCalendar: Exception: '.$e->getMessage()."\n";
+    error_log($exception_message);
+    echo $exception_message;
+    http_response_code(500);
+    exit($e->getCode());
+}
+
 ?>
