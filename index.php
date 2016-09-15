@@ -4,7 +4,7 @@ try {
 
 //header("Content-type: text/calendar;");
 error_reporting(E_ALL);
-include('bennu/lib/bennu.inc.php');
+require_once('bennu/lib/bennu.inc.php');
 $a = new iCalendar;
 function leading_zeros($value, $places){
 // Function written by Marcus L. Griswold (vujsa)
@@ -36,14 +36,14 @@ $config_file = './config.ini';
 $config = parse_ini_file($config_file, true, INI_SCANNER_TYPED);
 if(false === $config) {
 	$e = error_get_last();
-	throw new ErrorException($e[message], $e[type], $severity, $e[file], $e[line]);
+	throw new ErrorException($e[message], $e[type], E_ERROR, $e[file], $e[line]);
 }
 
 // Parse API-code file
 $apicode = file_get_contents($config["FILES"]["API-CODE"]);
 if(false === $apicode) {
 	$e = error_get_last();
-	throw new ErrorException($e[message], $e[type], $severity, $e[file], $e[line]);
+	throw new ErrorException($e[message], $e[type], E_ERROR, $e[file], $e[line]);
 }
 
 // Remove leading and trailing whitespaces
